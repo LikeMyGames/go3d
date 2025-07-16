@@ -1,0 +1,9 @@
+{
+	"name": "test-project",
+	"build_output": "./bin",
+	"entrance": "main.go",
+	"compiled_meshes": false,
+	"scripts": {
+		"build": "go3d build main.go"
+	}
+}
