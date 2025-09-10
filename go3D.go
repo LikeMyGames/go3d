@@ -29,6 +29,7 @@ type (
 	// at the root of a go-3D project
 	BuildSettings struct {
 		Name           string          `json:"name"`            // The name of a go-3D project (this gets used to generate file names when building)
+		ExecutableName string          `json:"executable_name"` // The name of the .exe file generated when building a go-3d project
 		BuildOutput    string          `json:"build_output"`    // The build output when building a go-3D project (this defaults to [./bin])
 		Entrance       string          `json:"entrance"`        // The entry file into the go program (base file of the app, [./src/main.go] by default)
 		CompiledMeshes bool            `json:"compiled_meshes"` // Whether or not meshes get compiled into go-structs when the app gets built (off by default)
@@ -40,6 +41,39 @@ type (
 
 	SettingsScripts map[string]string // A key-value pair type that defines scripts in the settings.json file of a go-3D project
 )
+
+var Boilerplate = map[string]string{
+	"main.go": `package game
+
+import (
+	eng "github.com/likemygames/go3D/engine"
+)
+
+func Game() eng.Game {
+	return eng.Game{
+		Name: "",
+		Levels: []eng.Level{
+			{
+				Name:   "Level 1",
+				Player: eng.Player{},
+				Objects: []eng.Object{
+					{
+						Name:    "Default Cube",
+						Variant: eng.MeshType,
+						Mesh: eng.Mesh{
+							File: "cube.obj",
+							Name: "Cube",
+						},
+						Children: []eng.Object{},
+					},
+				},
+			},
+		},
+	}
+}
+`,
+	"main.go append": ``,
+}
 
 func main() {
 	commands := map[string]Command{
@@ -112,38 +146,6 @@ func GenerateNewProject(name string) {
 		Opening: "./public/opening.mp4",
 	}
 
-	Boilerplate := map[string]string{
-		"main.go": `package game
-
-import (
-	eng "github.com/likemygames/go3D/engine"
-)
-
-func Game() eng.Game {
-	return eng.Game{
-		Name: "Game Name",
-		Levels: []eng.Level{
-			{
-				Name:   "Level 1",
-				Player: eng.Player{},
-				Objects: []eng.Object{
-					{
-						Name:    "Default Cube",
-						Variant: eng.MeshType,
-						Mesh: eng.Mesh{
-							File: "cube.obj",
-							Name: "Cube",
-						},
-						Children: []eng.Object{},
-					},
-				},
-			},
-		},
-	}
-}
-`,
-	}
-
 	err := os.Mkdir(name, os.ModeDir)
 	if err != nil {
 		panic(err)
@@ -173,14 +175,14 @@ func Game() eng.Game {
 		panic(err)
 	}
 
-	err = os.Mkdir("public", os.ModeDir)
+	err = os.Mkdir("media", os.ModeDir)
 	if err != nil {
 		panic(err)
 	}
 
-	os.Create("./public/icon.ico")
-	os.Create("./public/splash.png")
-	os.Create("./public/opening.mp4")
+	os.Create("./media/icon.ico")
+	os.Create("./media/splash.png")
+	os.Create("./media/opening.mp4")
 
 	err = os.Mkdir("src", os.ModeDir)
 	if err != nil {

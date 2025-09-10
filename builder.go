@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"go3d/engine"
+	"os/exec"
 )
 
 // Builds a go-3D project into a binary form and stores it
@@ -30,5 +29,52 @@ func Build() {
 	if err != nil {
 		panic(err)
 	}
-	eng := engine.Engine{}
+
+	file, err := os.OpenFile("./src/main.go", os.O_APPEND, os.ModeAppend)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = file.Write([]byte(Boilerplate["main.go append"]))
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Chdir("./src")
+	if err != nil {
+		panic(err)
+	}
+
+	cmd := exec.Command("go", "build", "-o "+settings.ExecutableName+".exe", settings.Entrance)
+	fmt.Println(cmd.String())
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	file1, err := os.Open(settings.ExecutableName + ".exe")
+	if err != nil {
+		panic(err)
+	}
+
+	data = []byte{}
+	_, err = file1.Read(data)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove(settings.ExecutableName + ".exe")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Chdir("../bin")
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.WriteFile(settings.ExecutableName+".exe", data, os.ModeAppend)
+	if err != nil {
+		panic(err)
+	}
 }

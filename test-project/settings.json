@@ -1,5 +1,6 @@
 {
 	"name": "test-project",
+	"executable_name": "test_project",
 	"build_output": "./bin",
 	"entrance": "main.go",
 	"compiled_meshes": false,

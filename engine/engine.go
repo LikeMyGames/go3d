@@ -1,25 +1,44 @@
 package engine
 
 import (
+	"fmt"
 	"time"
 )
 
 type (
 	Engine struct {
-		setup        func()
-		update       func()
-		framerate    float64
-		currentLevel Scene
+		setup               func()
+		update              func()
+		framerate           float64
+		currentInputMapping InputMapping
+		game                Game
+		renderer            RasterRenderer
+	}
+
+	Game struct {
+		Name          string
+		InputMappings map[string]InputMapping
+		Levels        []*Level
+	}
+
+	Level struct {
+		Name    string
+		Player  *Player
+		Objects []*Object
 	}
 )
 
-func NewEngine(setup, update func(), framerate float64) Engine {
-	return Engine{
-		setup:        setup,
-		update:       update,
-		framerate:    framerate,
-		currentLevel: Scene{},
+var engine *Engine = nil
+
+func NewEngine(setup, update func(), framerate float64) *Engine {
+	if engine == nil {
+		engine = &Engine{
+			setup:     setup,
+			update:    update,
+			framerate: framerate,
+		}
 	}
+	return engine
 }
 
 func (e *Engine) Start() {
@@ -33,7 +52,11 @@ func (e *Engine) Start() {
 	}
 }
 
-func main() {
+func Main() {
 	engine := NewEngine(func() {}, nil, 60)
 	engine.Start()
+}
+
+func Print(a ...any) {
+	fmt.Println(a...)
 }
